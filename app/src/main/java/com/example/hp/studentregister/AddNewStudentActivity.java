@@ -1,52 +1,61 @@
 package com.example.hp.studentregister;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.hp.studentregister.databinding.ActivityAddNewStudentBinding;
 
 public class AddNewStudentActivity extends AppCompatActivity {
 
-    private EditText nameEditText;
-    private EditText emailEditText;
-    private EditText countryEditText;
+    private ActivityAddNewStudentBinding binding;
+    private Student student;
+    private AddStudentActivityClickHandler clickHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_student);
 
-        nameEditText=findViewById(R.id.et_name);
-        emailEditText=findViewById(R.id.et_email);
-        countryEditText=findViewById(R.id.et_country);
-        Button submitButton = findViewById(R.id.btnSubmit);
+        binding = ActivityAddNewStudentBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+        clickHandler = new AddStudentActivityClickHandler(this);
+        binding.setClickHandler(clickHandler);
 
-        submitButton.setOnClickListener(v -> {
+        student = new Student();
+        binding.setStudent(student);
+    }
 
-            if(TextUtils.isEmpty(nameEditText.getText())){
+    public class AddStudentActivityClickHandler {
+        private Context context;
 
-                Toast.makeText(getApplicationContext(),"Name field cannot be empty",Toast.LENGTH_LONG).show();
-            }else{
+        AddStudentActivityClickHandler(Context context) {
+            this.context = context;
+        }
 
-                String name=nameEditText.getText().toString();
-                String email=emailEditText.getText().toString();
-                String country=countryEditText.getText().toString();
-
-                Intent intent=new Intent();
-                intent.putExtra("NAME",name);
-                intent.putExtra("EMAIL",email);
-                intent.putExtra("COUNTRY",country);
-                setResult(RESULT_OK,intent);
-                finish();
-
+        public void onSubmitButtonClick(View v) {
+            if (student.getStudentName() == null) {
+                Toast.makeText(context, "enter name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (student.getStudentEmail() == null) {
+                Toast.makeText(context, "enter email", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (student.getCountry() == null) {
+                Toast.makeText(context, "enter country", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-        });
-
-
+            Intent intent = new Intent();
+            intent.putExtra("NAME", student.getStudentName());
+            intent.putExtra("EMAIL", student.getStudentEmail());
+            intent.putExtra("COUNTRY", student.getCountry());
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 }
